@@ -1,9 +1,13 @@
 volumes/db/*
+!volumes/db/.gitkeep
 volumes/private/*
+!volumes/private/.gitkeep
 volumes/public/*
-volumes/migration/*
+!volumes/public/.gitkeep
 volumes/logs/app/*
+!volumes/logs/app/.gitkeep
 volumes/logs/db/*
+!volumes/logs/db/.gitkeep
 files/*
 !files/.gitkeep
 src/*
