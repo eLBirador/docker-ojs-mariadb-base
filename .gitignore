@@ -1,0 +1,8 @@
+volumes/db/*
+volumes/private/*
+volumes/public/*
+volumes/migration/*
+volumes/logs/app/*
+volumes/logs/db/*
+files/*
+src/*

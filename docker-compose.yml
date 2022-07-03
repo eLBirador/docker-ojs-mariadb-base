@@ -1,0 +1,63 @@
+version: '3.6'
+
+#Docker Networks
+networks:
+  ojs-network:
+
+services:  
+
+  # Database
+  db:
+    image: mariadb:10.2
+    env_file:
+      - .env
+    container_name: "ojs_db_${COMPOSE_PROJECT_NAME:-demo}"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-ojsPwd}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE:-ojs}"
+      MYSQL_USER: "${MYSQL_USER:-ojs}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:-ojsPwd}"
+    volumes:
+      - ./volumes/db:/var/lib/mysql
+      - ./volumes/logs/db:/var/log/mysql
+      - ./volumes/config/db.charset.conf:/etc/mysql/conf.d/charset.cnf
+      - ./volumes/migration:/docker-entrypoint-initdb.d
+
+    ports:
+      - "3306:3306"
+    networks:
+      - ojs-network
+    restart: always
+
+  #OJS
+  ojs:
+    image: pkpofficial/ojs:3_3_0-11
+    container_name: ojs
+    restart: unless-stopped
+    working_dir: /var/www
+    hostname: ojs
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./files:/var/www/files
+      - ./src:/var/www/public
+      - ./volumes/public:/var/www/html/public
+      - ./volumes/logs/app:/var/log/apache2
+      - ./volumes/config/ojs.config.inc.php:/var/www/html/config.inc.php
+      - ./volumes/config/apache.htaccess:/var/www/html/.htaccess
+      - ./volumes/php.custom.ini:/usr/local/etc/php/conf.d/custom.ini
+
+#      - /etc/localtime:/etc/localtime
+#https://github.com/microsoft/WSL/issues/1392
+#      - ./volumes/private:/var/www/files
+
+    networks:
+      - ojs-network
+
+#Volumes
+volumes:
+  dbdata:
+    driver: local
