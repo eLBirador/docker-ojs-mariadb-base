@@ -5,4 +5,6 @@ volumes/migration/*
 volumes/logs/app/*
 volumes/logs/db/*
 files/*
+!files/.gitkeep
 src/*
+!src/.gitkeep
